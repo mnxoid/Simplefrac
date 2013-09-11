@@ -367,6 +367,10 @@ void znamennyk_out(znamennyk z)
 	 }
 	cout << endl;
  }
+void znamennyk_in(znamennyk z)
+ {
+	//input of znamennyk
+ }
 //----------Main function---------------------------------
 int main()
  {
