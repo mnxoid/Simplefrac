@@ -379,7 +379,14 @@ void znamennyk_in(znamennyk z,char str[256] = "This string was made by mnxoid ju
 	 }
 	string stri[5];
 	stri[0]="";
+	string steps[5];
+	steps[0]="";
 	i=0;j=0;
+	bool end,open,stepopen,first;
+	end=false;
+	open=false;
+	stepopen=false;
+	first=true;
 	for (i=0;i<256;i++)
 	 {
 		if (end) {
@@ -401,6 +408,16 @@ void znamennyk_in(znamennyk z,char str[256] = "This string was made by mnxoid ju
 			cout << "error!" << endl;
 		 }
 		if (j==6) end=true;
+	 }
+	for (j=0;j<6;j++)
+	 {
+		char temp[256];
+		strcpy(temp,stri[j].c_str());
+		mnogochlen a;
+		mnogochlen_in(a,temp);
+		z.duzky[j].mnog=a;
+		strcpy(temp,steps[j].c_str());
+		if (steps[j]!="") {z.duzky[j].step=atoi(temp);} else {z.duzky[j].step=1;}
 	 }
  }
 //----------Main function---------------------------------
@@ -549,6 +566,10 @@ int main()
 	a.init();
 	mnogochlen_in(a);
 	mnogochlen_out(a,false);
+//znamennyk I/O
+	znamb.init();
+	znamennyk_in(znamb);
+	znamennyk_out(znamb);
 	//end of testing part put here a "* /" and a "/ *" in the start
 	getch();
 	return 0;
