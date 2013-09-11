@@ -367,9 +367,41 @@ void znamennyk_out(znamennyk z)
 	 }
 	cout << endl;
  }
-void znamennyk_in(znamennyk z)
+void znamennyk_in(znamennyk z,char str[256] = "This string was made by mnxoid just for lulz!")
  {
-	//input of znamennyk
+	char s[256];
+	int i,j,n;
+	if (str == "This string was made by mnxoid just for lulz!") {
+		n=getline(s,maxline);n=0;
+	 } else {
+		for (i=0;i<256;i++) { s[i]=str[i]; }
+		n=0;
+	 }
+	string stri[5];
+	stri[0]="";
+	i=0;j=0;
+	for (i=0;i<256;i++)
+	 {
+		if (end) {
+			//do nothing
+		 } else if (s[i]=='\0') {
+			end=true; 
+		 } else if (s[i]=='(') {
+			if (first) {open=true;first=false;} else {j++;open=true;stepopen=false;}
+			open=true;
+		 } else if (s[i]==')') {
+			open=false;
+		 } else if (s[i]=='^') {
+			stepopen=true;
+		 } else if (stepopen) {
+			steps[j] += string(1,s[i]);
+		 } else if (open) {
+			stri[j] += string(1,s[i]);
+		 } else {
+			cout << "error!" << endl;
+		 }
+		if (j==6) end=true;
+	 }
  }
 //----------Main function---------------------------------
 int main()
