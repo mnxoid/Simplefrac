@@ -222,24 +222,44 @@ void mnogochlen_out(mnogochlen a,bool silent)
 					cout << a.odnos[i].koef;
 				 }
 			 } else {
-				if ((i != 0) and (i != 1))
-				 {
-					if (a.odnos[i].koef != 1)
+			 	if (a.odnos[i].koef>0) {
+					if ((i != 0) and (i != 1))
 					 {
-						cout << " + " << a.odnos[i].koef << "*x^" << a.odnos[i].step;
+						if (a.odnos[i].koef != 1)
+						 {
+							cout << " + " << a.odnos[i].koef << "*x^" << a.odnos[i].step;
+						 } else {
+							cout << " + " << "x^" << a.odnos[i].step;
+						 }
+					 } else if (i==1) {
+						if (a.odnos[i].koef != 1)
+						 {
+							cout << " + " << a.odnos[i].koef << "*x";
+						 } else {
+							cout << " + " << "x";
+						 }
 					 } else {
-						cout << " + " << "x^" << a.odnos[i].step;
-					 }
-				 } else if (i==1) {
-					if (a.odnos[i].koef != 1)
+						cout << " + " << a.odnos[i].koef;}} else {
+					if ((i != 0) and (i != 1))
 					 {
-						cout << " + " << a.odnos[i].koef << "*x";
+						if (a.odnos[i].koef != 1)
+						 {
+							cout  << a.odnos[i].koef << "*x^" << a.odnos[i].step;
+						 } else {
+							cout  << "x^" << a.odnos[i].step;
+						 }
+					 } else if (i==1) {
+						if (a.odnos[i].koef != 1)
+						 {
+							cout  << a.odnos[i].koef << "*x";
+						 } else {
+							cout  << "x";
+						 }
 					 } else {
-						cout << " + " << "x";
+						cout  << a.odnos[i].koef;
 					 }
-				 } else {
-					cout << " + " << a.odnos[i].koef;
-				 }			 }
+				 }			 
+			 }
 		 }
 	 }
 	if (!silent) { cout << endl; }
@@ -392,7 +412,7 @@ void znamennyk_out(znamennyk z)
 	 }
 	cout << endl;
  }
-void znamennyk_in(znamennyk z,char str[256] = "This string was made by mnxoid just for lulz!")
+void znamennyk_in(znamennyk& z,char str[256] = "This string was made by mnxoid just for lulz!")
  {
 	char s[256];
 	int i;
@@ -404,11 +424,14 @@ void znamennyk_in(znamennyk z,char str[256] = "This string was made by mnxoid ju
 		for (i=0;i<256;i++) { s[i]=str[i]; }
 		n=0;
 	 }
+	vector<string> mnogs;
+	vector<string> steps;
+	string temp;
 	//string stri1[5], steps[5];
-	char stri1[5][50];
-	char steps[5][3];
-	for (i=0;i<6;i++) for (j=0;j<51;j++) stri1[i][j]='\0';
-	for (i=0;i<6;i++) for (j=0;j<4;j++) steps[i][j]='\0';
+	//char stri1[5][50];
+	//char steps[5][3];
+	//for (i=0;i<6;i++) for (j=0;j<51;j++) stri1[i][j]='\0';
+	//for (i=0;i<6;i++) for (j=0;j<4;j++) steps[i][j]='\0';
 	//for (i=0;i<6;i++) { stri[i]="";steps[i]="";}
 	i=0;j=0;
 	bool end,open,stepopen,first;
@@ -420,26 +443,31 @@ void znamennyk_in(znamennyk z,char str[256] = "This string was made by mnxoid ju
 	for (i=0;i<256;i++)
 	 {
 		if (end) {
-			//do nothing
+			break;
 		 } else if (s[i]=='\0') {
 			end=true; 
+			if (stepopen) {steps.push_back(temp);} else {steps.push_back("1");}
 		 } else if (s[i]=='(') {
-			if (first) {open=true;first=false;} else {j++;open=true;stepopen=false;}
+			if (first) {open=true;first=false;temp="";} else {
+				if (stepopen) {steps.push_back(temp);} else {steps.push_back("1");}
+				j++;open=true;stepopen=false;temp="";}
 			n++;
 		 } else if (s[i]==')') {
 			open=false;
+			mnogs.push_back(temp);
 		 } else if ((s[i]=='^') && !(open)) {
 			stepopen=true;
+			temp="";
 		 } else if (stepopen) {
-			steps[j][strlen(steps[j])+1]=s[i];
+			temp+=s[i];
 		 } else if (open) {
-			stri1[j][strlen(stri1[j])+1]=s[i];
+			temp+=s[i];
 		 } else {
 			cout << "error!" << endl;
 		 }
 		if (j==6) end=true;
 	 }
-	for (j=0;j<n;j++)
+	for (j=0;j<mnogs.size();j++)
 	 {
 		//char temp[256];
 		//for (i=0;i<257;i++) temp[i]='\0';
@@ -447,18 +475,14 @@ void znamennyk_in(znamennyk z,char str[256] = "This string was made by mnxoid ju
 		//strcpy(temp,stri1[j].c_str());
 		mnogochlen a;
 		a.init();
-		mnogochlen_in(a,stri1[j]);
+		mnogochlen_in(a,mnogs.at(j).c_str());
 		z.duzky[j].mnog=a;
 		//strcpy(temp,steps[j].c_str());
-		if (steps[j][0]!='\0')// && (steps[j].c_str()!="")) 
-		 {
-			z.duzky[j].step=atoi(steps[j]);
-		 } else {
-			z.duzky[j].step=1;
-		 }
+		z.duzky[j].step=atoi(steps.at(j).c_str());
 	 }
 	//delete stri;
 	//delete steps;
+	
  }
 //----------Main function---------------------------------
 int main()
