@@ -5,6 +5,8 @@
 #include <iostream>
 #include <sstream>
 #include <cstring>
+#include <vector>
+//#include "string_array.h"
 //----------Definitions-----------------------------------
 #define eof 27
 #define maxline 1000
@@ -105,6 +107,37 @@ int getch()
  {
 	char i[maxline];
 	return(getline(i, maxline));
+ }
+bool isin(char a,string d)
+ {
+ 	bool r=false;
+ 	for(int i=0;i<d.length();i++)
+ 	 {
+ 	 	if (a==d[i]) r=true;
+ 	 }
+ 	return r;
+ }
+vector<string> tokenize(string source,string delims)
+ {
+ 	vector<string> toks;
+ 	string temp="";
+	for (int i=0;i<source.length();i++)
+	 {
+	 	if ((i==0) && (isin(source[i],delims)))
+	 	 {
+	 	 	temp+=source[i];
+	 	 } else if (isin(source[i],delims)) {
+	 	 	toks.push_back(temp);
+	 	 	temp="";
+	 	 	temp+=source[i];
+	 	 } else if (i==source.length()-1) {
+	 	 	temp+=source[i];
+	 	 	toks.push_back(temp);
+	 	 } else {
+	 	 	temp+=source[i];
+	 	 }
+	 }
+	return toks;
  }
 void odnochlen_mul(odnochlen& recp, odnochlen mul)
  {
@@ -266,26 +299,18 @@ void mnogochlen_in(mnogochlen& a,char str[256] = "This string was made by mnxoid
 		for (i=0;i<256;i++) { s[i]=str[i]; }
 		n=0;
 	 }
-	string stri[50];
-	stri[0]="";
-	i=0;j=0;
-	n=1;
-	while (s[i] != '\0')
-	 {
-		if (((s[i]=='+') || (s[i]=='-')) && (i!=0))
-		 {
-			j++;stri[j]="";stri[j] += string(1,s[i]);i++;n++;
-		 } else {
-			stri[j] += string(1,s[i]);i++;
-		 }
-	 }
-	for (i=0;i<n+1;i++) {
+	string inst(s);
+	string delims = "+-";
+	vector<string> tokens;
+	tokens=tokenize(inst,delims);
+	for (i=0;i<tokens.size();i++) {
 		odnochlen b;
-		char temp[256];
-		strcpy(temp,stri[i].c_str());
+		//char temp[256];
+		//for (j=0;j<257;j++) temp[j]='\0';
+		//strcpy(temp,stri[i].c_str());
 		b.koef=0;
 		b.step=0;
-		odnochlen_in(b,temp);
+		odnochlen_in(b,tokens.at(i).c_str());
 		a.addodn(b);
 	 }
  }
@@ -370,23 +395,28 @@ void znamennyk_out(znamennyk z)
 void znamennyk_in(znamennyk z,char str[256] = "This string was made by mnxoid just for lulz!")
  {
 	char s[256];
-	int i,j,n;
+	int i;
+	for (i=0;i<256;i++) s[i]='\0';
+	int j,n;
 	if (str == "This string was made by mnxoid just for lulz!") {
 		n=getline(s,maxline);n=0;
 	 } else {
 		for (i=0;i<256;i++) { s[i]=str[i]; }
 		n=0;
 	 }
-	string stri[5];
-	stri[0]="";
-	string steps[5];
-	steps[0]="";
+	//string stri1[5], steps[5];
+	char stri1[5][50];
+	char steps[5][3];
+	for (i=0;i<6;i++) for (j=0;j<51;j++) stri1[i][j]='\0';
+	for (i=0;i<6;i++) for (j=0;j<4;j++) steps[i][j]='\0';
+	//for (i=0;i<6;i++) { stri[i]="";steps[i]="";}
 	i=0;j=0;
 	bool end,open,stepopen,first;
 	end=false;
 	open=false;
 	stepopen=false;
 	first=true;
+	n=0;
 	for (i=0;i<256;i++)
 	 {
 		if (end) {
@@ -395,30 +425,40 @@ void znamennyk_in(znamennyk z,char str[256] = "This string was made by mnxoid ju
 			end=true; 
 		 } else if (s[i]=='(') {
 			if (first) {open=true;first=false;} else {j++;open=true;stepopen=false;}
-			open=true;
+			n++;
 		 } else if (s[i]==')') {
 			open=false;
-		 } else if (s[i]=='^') {
+		 } else if ((s[i]=='^') && !(open)) {
 			stepopen=true;
 		 } else if (stepopen) {
-			steps[j] += string(1,s[i]);
+			steps[j][strlen(steps[j])+1]=s[i];
 		 } else if (open) {
-			stri[j] += string(1,s[i]);
+			stri1[j][strlen(stri1[j])+1]=s[i];
 		 } else {
 			cout << "error!" << endl;
 		 }
 		if (j==6) end=true;
 	 }
-	for (j=0;j<6;j++)
+	for (j=0;j<n;j++)
 	 {
-		char temp[256];
-		strcpy(temp,stri[j].c_str());
+		//char temp[256];
+		//for (i=0;i<257;i++) temp[i]='\0';
+		//stri1[j] += string(1,' ');
+		//strcpy(temp,stri1[j].c_str());
 		mnogochlen a;
-		mnogochlen_in(a,temp);
+		a.init();
+		mnogochlen_in(a,stri1[j]);
 		z.duzky[j].mnog=a;
-		strcpy(temp,steps[j].c_str());
-		if (steps[j]!="") {z.duzky[j].step=atoi(temp);} else {z.duzky[j].step=1;}
+		//strcpy(temp,steps[j].c_str());
+		if (steps[j][0]!='\0')// && (steps[j].c_str()!="")) 
+		 {
+			z.duzky[j].step=atoi(steps[j]);
+		 } else {
+			z.duzky[j].step=1;
+		 }
 	 }
+	//delete stri;
+	//delete steps;
  }
 //----------Main function---------------------------------
 int main()
@@ -549,6 +589,7 @@ int main()
 	znamennyk_out(znams);
 	znamennyk_out(znamr);
 //the I/O part
+	cout << "input odnochlen" << endl;
 	odnochlen_in(b);
 	odnochlen_out(b);
 	odnochlen_in(b,"2x^5\0");
@@ -564,10 +605,12 @@ int main()
 	cout << boolalpha << dr.valid() << noboolalpha << endl;// Special thx to : Nibu Thomas for posting this on ntcoder.com
 //mnogochlen I/O
 	a.init();
+	cout << "input mnogochlen" << endl;
 	mnogochlen_in(a);
 	mnogochlen_out(a,false);
 //znamennyk I/O
 	znamb.init();
+	cout << "input znamennyk" << endl;
 	znamennyk_in(znamb);
 	znamennyk_out(znamb);
 	//end of testing part put here a "* /" and a "/ *" in the start

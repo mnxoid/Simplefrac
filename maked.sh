@@ -1,2 +1,2 @@
 rm ./simplefrac
-g++ simplefrac.c -o simplefrac -g
+g++ simplefrac.c -o simplefrac -g -fpermissive
